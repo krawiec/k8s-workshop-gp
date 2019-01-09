@@ -83,3 +83,8 @@ Revers proxy do poda
         fieldRef:
           fieldPath: spec.nodeName
 ```
+## Tworzenie secretu generic
+
+```
+kubectl create secret generic demo --from-literal=user=lukasz --from-literal=pass=MojeTrudneHaslo
+```
