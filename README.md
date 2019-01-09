@@ -28,3 +28,18 @@ Listowanie podów
 Listowanie podów z ip i nodem
 
 `kubectl get pods -o wide`
+
+# Dostanie się do poda
+
+Wyświetlenie stdout i stderr z poda
+
+`kubectl logs kuard`
+
+Wyświetlenie stdout i stderr z poda i fallow
+`kubectl logs -f  kuard`
+
+Wejście do poda w trybie interaktywnym
+`kubectl exec -it kuard sh`
+
+Revers proxy do poda
+`kubectl port-forward kuard 8080`
