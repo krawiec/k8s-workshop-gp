@@ -14,3 +14,17 @@ az account show
 ```
 az aks get-credentials --resource-group aks-labki --name aks-labki
 ```
+
+# demo1
+
+Wrzucenie konfiguracji na klaster
+
+`kubectl apply -f demo1.yaml`
+
+Listowanie podów
+
+`kubectl get pods`
+
+Listowanie podów z ip i nodem
+
+`kubectl get pods -o wide`
