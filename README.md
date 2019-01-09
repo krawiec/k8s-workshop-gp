@@ -43,3 +43,43 @@ Wejście do poda w trybie interaktywnym
 
 Revers proxy do poda
 `kubectl port-forward kuard 8080`
+
+# DEMO 2 - zmienne zdefinowane w konfiguracji i referencje do obiektu
+
+```
+    env:
+    - name: DEMO
+      value: "Nasza wartosc"
+```
+
+```
+  containers:
+  - image: gcr.io/kuar-demo/kuard-amd64:1
+    name: kuard
+    ports:
+    - containerPort: 8080
+      name: http
+      protocol: TCP
+    env:
+    - name: DEMO
+      value: "Nasza wartosc"
+```
+## TO DO - dodac link do spec
+
+```
+    env:
+    - name: DEMO
+      value: "Nasza wartosc"
+    - name: KUBE_POD_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    - name: KUBE_POD_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.podIP
+    - name: KUBE_NODE_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName
+```
