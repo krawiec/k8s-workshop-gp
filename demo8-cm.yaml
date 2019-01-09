@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm-demo
+data:
+  Rating.vue: "\n<template>\n  <section>\n    <div class=\"row at-row flex-center
+    flex-middle\">\n      <div class=\"col-lg-24\">\n        <a href=\"/\"><img class=\"super-justice\"
+    :src=\"headerImage\"></a>\n      </div>\n    </div>\n    <div class=\"row at-row
+    flex-center flex-middle\">\n      <div class=\"col-lg-24\">\n        <h1 class=\"super-header\">{{subtitle}}</h1>\n
+    \     </div>\n    </div>\n    <div class=\"row at-row\">\n      <div class=\"col-lg-6\"
+    v-for=\"(item) in heroes\">\n        <div class=\"at-box-row\">\n          <at-card
+    :bordered=\"false\">\n            <h4 slot=\"title\" class=\"super-name\">\n              {{item.name}}\n
+    \           </h4>\n            <div class=\"flex-center flex-middle\">\n              <img
+    class=\"super-image\" :src=\"item.img\">\n            </div>\n            <div
+    class=\"super-rate-foot super-star-total-rate\">\n              <at-rate :allow-half=\"true\"
+    :ref=\"item._id\" :id=\"item._id\" @on-change=\"rateHero(item._id, item.name,
+    $event)\"></at-rate>\n            </div>\n          </at-card>\n        </div>\n
+    \     </div>\n    </div>\n    <div class=\"row at-row flex-center flex-middle\">\n
+    \     <div class=\"col-lg-24\">\n        <at-button @click=\"submitRatings\" class=\"rate-submit\"
+    icon=\"icon-check\" hollow>&nbsp;&nbsp;SUBMIT MY RATINGS&nbsp;&nbsp;</at-button>\n
+    \     </div>\n    </div>\n  </section>\n</template>\n\n<script>\nimport axios
+    from 'axios'\n\nexport default {\n  data () {\n    return {\n      headerImage:
+    \"\",\n      subtitle: \"\",\n      userIp: \"\",\n      heroes: [],\n      errors:
+    []\n    }\n  },\n    created() {\n      axios.get(\"/api/sites/\" + process.env.SITE_CODE)\n
+    \       .then(response => {\n          var page = response.data.payload.pages.Rating\n
+    \         document.title = page.title\n          this.headerImage = page.headerImage\n
+    \         this.subtitle = page.subtitle\n          return axios.get(\"/api/heroes\")
+    \n        })\n        .then(response => {\n          this.heroes = response.data.payload\n
+    \         this.$Notify({ title: 'Ready to Rate', message: 'Data Retrieved', type:'success'
+    })\n          // hardcoding this for now\n          this.userIp = '127.0.0.1'\n
+    \       })\n        .catch(e => {\n          // lets console errors, but turn
+    the notify off\n          console.log(e);\n          // this.$Notify({ title:
+    'ERROR', message: e, type:'error' })\n          this.errors.push(e)\n        })\n\n
+    \   },\n    methods: {\n      rateHero: function (id, name, event) {\n        if
+    (name === 'Batman' && event > 3.5) {\n          this.$Notify({ title: `Seriously?`,
+    message: `He's just a rich guy. Zero super powers. Altrustic? Yes. Not a Superhero.
+    Are you a PM?`, type: 'warning', duration: 10000 })\n        }\n      },\n      submitRatings()
+    {\n        var rate = {}\n        var refs = this.$refs\n        var router =
+    this.$router\n        rate[\"userIp\"] = this.userIp\n        rate[\"ratings\"]
+    = []\n        \n        for (var h in refs) {\n          rate.ratings.push({ id:
+    h, rating: Number( refs[h][0].currentValue || 0 ) })\n        }   \n\n        axios.post(\"/api/rate\",
+    rate)\n        .then(response => {\n          router.push('leaderboard')\n        })\n
+    \       .catch(e => {\n          this.errors.push(e)\n        })\n\n      }\n
+    \   }\n  };\n</script>"
+  demo1.yaml: |-
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: kuard
+    spec:
+      containers:
+      - image: gcr.io/kuar-demo/kuard-amd64:1
+        name: kuard
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+  demo2.yaml: |-
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: kuard
+    spec:
+      containers:
+      - image: gcr.io/kuar-demo/kuard-amd64:1
+        name: kuard
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        env:
+        - name: DEMO
+          value: "Nasza wartosc"
+        - name: KUBE_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: KUBE_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: KUBE_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
